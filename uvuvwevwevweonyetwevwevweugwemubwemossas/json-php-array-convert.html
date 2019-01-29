@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <meta name="author" content="Teguh Tri Sasongko">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JSON/PHP Array Converter">
+    <meta name="keywords" content="Convert JSON/PHP Array Converter, JSON/PHP Array Converter, Convert JSON/PHP Array, JSON to PHP, PHP to JSON ">
+<body>
+<center><h3 style="color:white;padding:2px;background:#5997f9;margin-top:0px;border:2px dashed white;">JSON/PHP Array Converter</h3></center>
+  <div id="app" class="container">
+     <p>&nbsp&nbsp Berikut ini mengonversi susunan tag pendek PHP atau array JSON ke jenis array yang berlawanan.
+	Ini dimaksudkan untuk mengurangi waktu konversi array JSON.
+	Paling berguna untuk memetakan konversi, dll.</p>
+    <label for="type_selection">Convert dari</label>
+    <select id="type_selection" v-model="selected">
+        <option v-for="option in options" :value="option.value">
+           &nbsp&nbsp {{ option.text }}
+        </option>
+    </select>
+    <span>
+
+    &nbsp&nbsp<p>Pilih: {{ selected }}</span></p>
+
+    &nbsp&nbsp<label for="convert_src">Source</label><br>
+    <center><textarea id="convert_src" class="form-control" rows="10" v-model="src_array" placeholder="Masukan source array anda disini!"></textarea></center><br>
+
+    &nbsp&nbsp<label for="convert_dst">Converted</label><br>
+    <center><textarea id="convert_dst" class="form-control" rows="10" v-model="dst_array"></textarea></center>
+</div>
+
+</body>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.13/vue.min.js'></script>
+
+  
+
+    <script>
+	new Vue({
+    el: '#app',
+    data: {
+        selected: 'json',
+        src_array: '',
+        options: [{
+            text: 'JSON Array',
+            value: 'json'
+        }, {
+            text: 'PHP Array',
+            value: 'php'
+        }, ]
+    },
+    computed: {
+        // a computed getter
+        dst_array: function() {
+            if (this.src_array === "") {
+                return;
+            }
+            
+            var cdata = '';
+
+            if (this.selected === 'php') {
+                var temp = this.src_array;
+
+                temp = temp.replace(/^\$[a-zA-Z0-9-_]+\s*=\s*\[/, '');
+                temp = temp.replace(/\[/g, '{');
+                temp = temp.replace(/]/g, '}');
+                temp = temp.replace(/\s*=>\s*"/g, ': "');
+                temp = temp.replace(/\s*=>\s*'/g, ': \'');
+                temp = temp.replace(/\s*=>\s*{'/g, ': {');
+
+                cdata = "[";
+                cdata += temp;
+                cdata += "]";
+                return cdata;
+            } else {
+                cdata = "public $params = [\n";
+
+                var temp = this.src_array;
+
+                if (temp.substr(0, 1) === "[" || temp.substr(0, 1) === "{") {
+                    temp = temp.substr(1);
+                }
+
+                if (temp.substring(temp.length - 1, temp.length) === "]" || 
+                    temp.substring(temp.length - 1, temp.length) === "}") {
+                    
+                    temp = temp.substr(0, temp.length - 1).trim();
+                }
+
+                temp = temp.replace(/\{/g, '[');
+                temp = temp.replace(/\}/g, ']');
+                temp = temp.replace(/\:\s*"/g, ' => "');
+                temp = temp.replace(/\:\s*'/g, ' => \'');
+                temp = temp.replace(/\:\s*\[/g, ' => [');
+                cdata += temp;
+                cdata += "\n];";
+                return cdata;
+            }
+        }
+    }
+});</script>
+
+
+
+
+</body>
+
+</html>
